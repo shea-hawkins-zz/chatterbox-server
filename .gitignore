@@ -40,4 +40,4 @@ node_modules
 .idea/
 
 ### Message DB ###
-server/messages/message.txt
+server/messages/
