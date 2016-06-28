@@ -12,7 +12,9 @@ this file and include it in basic-server.js so that it actually works.
 
 **************************************************************/
 
-var msgServer = require('./message-server');
+var messageServer = require('./message-server');
+var headers = require('./headers');
+
 var messages = [];
 var requestHandler = function(request, response) {
 
@@ -20,53 +22,33 @@ var requestHandler = function(request, response) {
   console.log(request.url);
 
   var statusCode, responseMsg;
-  var headers = defaultCorsHeaders;
 
-  if (request.url === '/classes/messages') {
-    headers['Content-Type'] = 'application/json';
-    if (request.method === 'GET') {
-      statusCode = 200;
-      responseMsg = JSON.stringify({results: messages});
-    } else if (request.method === 'POST') {
-      statusCode = 201;
-      var JSONstring = '';
-      
-      request.on('data', function(data) {
-        JSONstring += data;
-      });
-
-      request.on('end', function() {
-        var newMessage = JSON.parse(JSONstring);
-        newMessage.objectId = messages.length;
-        messages.push(newMessage);
-        response.end();
-      });
-
-      responseMsg = JSON.stringify({status: 'success'});
-    } else if (request.method === 'OPTIONS') {
-      statusCode = 200;
-      responseMsg = JSON.stringify({status: 'success'});
-    } else {
-      statusCode = 404;
-      responseMsg = 'Request invalid';
-    }
-  } else {
+  var error = function () {
     statusCode = 404;
     headers['Content-Type'] = 'text/plain';
     responseMsg = 'Request URL invalid';
+    response.writeHead(statusCode, headers);
+    response.end(responseMsg);
+  };
+
+  if (request.url === '/classes/messages') {
+    if (request.method === 'GET') {
+      messageServer.get(request, response);
+    } else if (request.method === 'POST') {
+      messageServer.post(request, response);
+    } else if (request.method === 'OPTIONS') {
+      messageServer.options(request, response);
+    } else {
+      error();
+    }
+  } else {
+    error();
   }
-  response.writeHead(statusCode, headers);
-  response.end(responseMsg);
-  
 };
 
-var defaultCorsHeaders = {
-  'access-control-allow-origin': '*',
-  'access-control-allow-methods': 'GET, POST, PUT, DELETE, OPTIONS',
-  'access-control-allow-headers': 'content-type, accept',
-  'access-control-max-age': 10 // Seconds.
-};
+
 
 module.exports.requestHandler = requestHandler;
+
 
 
