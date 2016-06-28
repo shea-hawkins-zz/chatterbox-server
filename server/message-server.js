@@ -1,10 +1,25 @@
 
 var headers = require('./headers.js');
+var path = require('path');
+var readline = require('readline');
+var fs = require('fs');
+var messagePath = path.join(__dirname, 'messages/message.txt');
+var messageReadStream = fs.createReadStream(messagePath);
+var messageWriteStream = fs.createWriteStream(messagePath, {flags: 'a'}); 
 
+// Truncate messages array after some number of messages have been reached.
+var messages = [];
 
-//headers.headers;
+var messageStream = readline.createInterface({
+  input: messageReadStream,
+  output: messageWriteStream
+});
 
-var messages = [{objectId: 0, text: 'Believe in the you that believes in you.', username: 'Kyle Cho', roomname: 'ChoPros'}];
+messageStream.on('line', function(line) {
+  messages.push(JSON.parse(line));
+});
+
+//
 
 var post = function(request, response) {
   var statusCode = 201;
@@ -18,6 +33,7 @@ var post = function(request, response) {
     var newMessage = JSON.parse(JSONstring);
     newMessage.objectId = messages.length;
     messages.push(newMessage);
+    messageWriteStream.write(JSON.stringify(newMessage) + '\n');
     headers['Content-Type'] = 'application/json';
     var responseMsg = JSON.stringify({status: 'success'});
     response.writeHead(statusCode, headers);
