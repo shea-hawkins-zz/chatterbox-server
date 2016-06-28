@@ -19,7 +19,6 @@ messageStream.on('line', function(line) {
   messages.push(JSON.parse(line));
 });
 
-//
 
 var post = function(request, response) {
   var statusCode = 201;
@@ -37,7 +36,7 @@ var post = function(request, response) {
     headers['Content-Type'] = 'application/json';
     var responseMsg = JSON.stringify({status: 'success'});
     response.writeHead(statusCode, headers);
-    response.end(responseMsg);
+    response.end();
   });
   
 };
@@ -53,7 +52,7 @@ var get = function(request, response) {
 var options = function(request, response) {
   var statusCode = 200;
   headers['Content-Type'] = 'application/json';
-  var responseMsg = JSON.stringify({status: 'success'});
+  var responseMsg = JSON.stringify({options: 'GET POST OPTIONS', GET: 'RETRIEVE MESSAGES', POST: 'POST MESSAGE'});
   response.writeHead(statusCode, headers);
   response.end(responseMsg);
 };
