@@ -3,19 +3,19 @@
   <head>
     <meta charset="utf-8">
     <title>chatterbox</title>
-    <link rel="stylesheet" href="styles/styles.css">
+    <link rel="stylesheet" href="client/styles/styles.css">
     <!-- dependencies -->
-    <script src="bower_components/jquery/dist/jquery.js"></script>
-    <script src="bower_components/underscore/underscore.js"></script>
-    <script src="bower_components/backbone/backbone.js"></script>
+    <script src="client/bower_components/jquery/dist/jquery.js"></script>
+    <script src="client/bower_components/underscore/underscore.js"></script>
+    <script src="client/bower_components/backbone/backbone.js"></script>
     <!-- your scripts -->
-    <script src="env/config.js"></script>
-    <script src="scripts/refactor.js"></script>
+    <script src="client/env/config.js"></script>
+    <script src="client/scripts/index.js"></script>
   </head>
   <body>
     <div id="main">
       <h1>chatter<em>box</em></h1>
-      <div class="spinner"><img src="images/spiffygif_46x46.gif"></div>
+      <div class="spinner"><img src="client/images/spiffygif_46x46.gif"></div>
       <form action="#" id="send" method="post">
         <input type="text" name="message" id="message"/>
         <input type="submit" name="submit" class="submit"/>
@@ -25,7 +25,7 @@
     <script>
       $(function(){
         // change this to true to run the Backbone version
-        var runBackboneSolution = false;
+        var runBackboneSolution = true;
 
         if (runBackboneSolution) {
           // Backbone-based app initialization
