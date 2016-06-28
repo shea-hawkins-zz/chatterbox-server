@@ -12,6 +12,8 @@ this file and include it in basic-server.js so that it actually works.
 
 **************************************************************/
 
+var msgServer = require('./message-server');
+var messages = [];
 var requestHandler = function(request, response) {
 
   console.log('Serving request type ' + request.method + ' for url ' + request.url);
@@ -19,17 +21,14 @@ var requestHandler = function(request, response) {
 
   var statusCode, responseMsg;
   var headers = defaultCorsHeaders;
-  var someData = {
-    results: [{objectId: '1', username: 'not shea', roomname: 'castro', text: 'howdy'}, {objectId: '2', username: 'not trev', roomname: 'texas', text: 'there'}]
-  };
 
-  if (request.url === '/classes/messages/') {
+  if (request.url === '/classes/messages') {
     headers['Content-Type'] = 'application/json';
-    statusCode = 200;
     if (request.method === 'GET') {
-      responseMsg = JSON.stringify(someData);
+      statusCode = 200;
+      responseMsg = JSON.stringify({results: messages});
     } else if (request.method === 'POST') {
-
+      statusCode = 201;
       var JSONstring = '';
       
       request.on('data', function(data) {
@@ -37,13 +36,15 @@ var requestHandler = function(request, response) {
       });
 
       request.on('end', function() {
-        someData.results.push(JSON.parse(JSONstring));
-        console.log(someData.results);
+        var newMessage = JSON.parse(JSONstring);
+        newMessage.objectId = messages.length;
+        messages.push(newMessage);
         response.end();
       });
 
       responseMsg = JSON.stringify({status: 'success'});
     } else if (request.method === 'OPTIONS') {
+      statusCode = 200;
       responseMsg = JSON.stringify({status: 'success'});
     } else {
       statusCode = 404;
@@ -55,9 +56,7 @@ var requestHandler = function(request, response) {
     responseMsg = 'Request URL invalid';
   }
   response.writeHead(statusCode, headers);
-
-  response.write(responseMsg);
-  response.end();
+  response.end(responseMsg);
   
 };
 
@@ -68,6 +67,6 @@ var defaultCorsHeaders = {
   'access-control-max-age': 10 // Seconds.
 };
 
-module.exports = requestHandler;
+module.exports.requestHandler = requestHandler;
 
 
